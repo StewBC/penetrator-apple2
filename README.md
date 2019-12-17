@@ -19,17 +19,48 @@ also missing the demo attract mode, and the fireworks.
 
 The game is written in 6502 assembly using the ca65 assembler.
 
-The other interesting thing about the original is that it ran the AI and user
-input twice for every world move. This version does not do it the same way. The
-bullet update ran twice for each world update but now that the world moves while
-the bullets move twice, the bullets could pass through the walls.  To fix this
-issue, I have made the bullets 50% longer.
+Below is a CPU cycle profile of 1 game frame in stage 4.  It's a busy frame with
+bullets, bombs and enemies.  Most importantly, it has a busy terrain at the top
+and bottom.
+
+| Hex    | Dec    | % of the | Item                |
+| Cycles | Cycles | Frame    |                     |
+|--------|--------|----------|---------------------|
+|148F3   |84211   |100%      |Total Frame          |
+|61F     |1567    |2.0%      |inputGame            |
+|0A      |10      |0.0%      |Misc                 |
+|73      |115     |0.1%      |gameWorldMove        |
+|05      |5       |0.0%      |Misc                 |
+|19      |25      |0.0%      |gameCheckStage       |
+|08      |8       |0.0%      |Misc                 |
+|B80     |2944    |3.5%      |gameAI               |
+|17      |23      |0.0%      |Misc                 |
+|7267    |29287   |34.8%     |drawClearRows        |
+|6721    |26401   |31.4%     |terrainDraw          |
+|38A8    |14504   |17.2%     |drawEnemies          |
+|985     |2437    |2.9%      |drawPlayer           |
+|581     |1409    |1.7%      |drawBullets          |
+|6E3     |1763    |2.1%      |drawBombs            |
+|E14     |3604    |4.3%      |drawExplosions       |
+|06      |6       |0.0%      |Misc                 |
+|1A      |26      |0.0%      |drawPresent          |
+|11      |17      |0.0%      |Misc                 |
+|3C      |60      |0.1%      |Emulator error       |
+
+As can be seen, clearing the area where the world will be drawn takes almost 35%
+of the frame and drawing the terrain takes another 31% of the frame.  The
+Emulator Error are unaccounted for cycles -discrepency between total cycles at
+the start and end, vs. the cycles reported in each step.  I modifies the
+emulator myself to do step reporting and I assume I must have missed someting.
 
 4. KEYS and JOYSTICK
 
 The Apple 2 gameplay works only with a joystick since you cannot detect multiple
 keys down on the Apple II.  The UI works with the keyboard or joystick and the
 world editor uses both.
+
+The joystick can also drive the menu's.  Pressing right, for example, is
+equivalent to pressing 1 (the UI menu options are selected through numbers).
 
 The menus all show the keys to advance.  There's also a help screen in the
 editor.
@@ -45,16 +76,16 @@ There are actually 2 programs in this.  The 1st is the game, and it's in
 src/apple2.
 
 * defs.inc       - Constants and definitions used throughout
-* draw.inc       - VERA layer drawing.  drawSprite, for example
+* draw.inc       - HGR buffer drawing.  drawSprite, for example
 * edit.inc       - The built-in world editor
 * file.inc       - Load and Save code
-* fontdata.inc   - A ZX Spectrum font in 16x8
+* fontdata.inc   - A ZX Spectrum font in reverse 8x8 - Apple II format
 * game.inc       - The in-game logic, AI etc.  The bulk of the "game"
 * input.inc      - User controls for game and editor
 * logo.hgr       - 8Kb splash screen in HGR format
-* logo.inc       - file that simply does an incbin on logo.hgr
+* logo.inc       - File that simply does an incbin on logo.hgr
 * logodata.inc   - Line data for writing Penetrator and logo image data
-* macros.inc     - print macros mostly
+* macros.inc     - Print macros mostly
 * penetrator.asm - Where the game starts, initial setup, etc.
 * penetrator.cfg - ca65 configuration file
 * rodata.inc     - Read-only data such as lookup tables, sprites etc.
@@ -62,8 +93,8 @@ src/apple2.
 * text.inc       - In game text and print functions
 * trndata.inc    - The world data (triplet - top, bottom and enemy pos)
 * ui.inc         - User facing screens, name input, etc.
-* variables.inc  - All non zero page variables
-* zpvars.inc     - The zero page variables
+* variables.inc  - All non zero page variables (stats, scores, draw buffers)
+* zpvars.inc     - The zero page variables (most variables)
 
 The second is the ProDos loader that will auto-load the game.  It's in the
 src/apple2.loader folder.  It has these files (all provided to me by Oliver
@@ -74,7 +105,8 @@ Schmidt)
 
 6. BUILDING THE GAME
 
-Making the game has a few steps.  Use make and the Makefile on all OSs, that would be the easiest.  
+Making the game has a few steps.  Use make and the Makefile on all OSs, that
+would be the easiest.  
 
 Start by making the loader - this needs to be done once only.  
 make TARGETS=apple2.loader
