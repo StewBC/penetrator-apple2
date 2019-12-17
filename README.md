@@ -23,29 +23,29 @@ Below is a CPU cycle profile of 1 game frame in stage 4.  It's a busy frame with
 bullets, bombs and enemies.  Most importantly, it has a busy terrain at the top
 and bottom.
 
-| Hex    | Dec    | % of the | Item                |
-| Cycles | Cycles | Frame    |                     |
-|--------|--------|----------|---------------------|
-|148F3   |84211   |100%      |Total Frame          |
-|61F     |1567    |2.0%      |inputGame            |
-|0A      |10      |0.0%      |Misc                 |
-|73      |115     |0.1%      |gameWorldMove        |
-|05      |5       |0.0%      |Misc                 |
-|19      |25      |0.0%      |gameCheckStage       |
-|08      |8       |0.0%      |Misc                 |
-|B80     |2944    |3.5%      |gameAI               |
-|17      |23      |0.0%      |Misc                 |
-|7267    |29287   |34.8%     |drawClearRows        |
-|6721    |26401   |31.4%     |terrainDraw          |
-|38A8    |14504   |17.2%     |drawEnemies          |
-|985     |2437    |2.9%      |drawPlayer           |
-|581     |1409    |1.7%      |drawBullets          |
-|6E3     |1763    |2.1%      |drawBombs            |
-|E14     |3604    |4.3%      |drawExplosions       |
-|06      |6       |0.0%      |Misc                 |
-|1A      |26      |0.0%      |drawPresent          |
-|11      |17      |0.0%      |Misc                 |
-|3C      |60      |0.1%      |Emulator error       |
+| Hex    | Dec    | % of the | Item                |  
+| Cycles | Cycles | Frame    |                     |  
+|--------|--------|----------|---------------------|  
+|148F3   |84211   |100%      |Total Frame          |  
+|61F     |1567    |2.0%      |inputGame            |  
+|0A      |10      |0.0%      |Misc                 |  
+|73      |115     |0.1%      |gameWorldMove        |  
+|05      |5       |0.0%      |Misc                 |  
+|19      |25      |0.0%      |gameCheckStage       |  
+|08      |8       |0.0%      |Misc                 |  
+|B80     |2944    |3.5%      |gameAI               |  
+|17      |23      |0.0%      |Misc                 |  
+|7267    |29287   |34.8%     |drawClearRows        |  
+|6721    |26401   |31.4%     |terrainDraw          |  
+|38A8    |14504   |17.2%     |drawEnemies          |  
+|985     |2437    |2.9%      |drawPlayer           |  
+|581     |1409    |1.7%      |drawBullets          |  
+|6E3     |1763    |2.1%      |drawBombs            |  
+|E14     |3604    |4.3%      |drawExplosions       |  
+|06      |6       |0.0%      |Misc                 |  
+|1A      |26      |0.0%      |drawPresent          |  
+|11      |17      |0.0%      |Misc                 |  
+|3C      |60      |0.1%      |Emulator error       |  
 
 As can be seen, clearing the area where the world will be drawn takes almost 35%
 of the frame and drawing the terrain takes another 31% of the frame.  The
