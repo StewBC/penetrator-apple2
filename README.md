@@ -76,10 +76,10 @@ Schmidt)
 
 Making the game has a few steps.  Use make and the Makefile on all OSs, that would be the easiest.  
 
-Start by making the loader - this needs to be done once only.
+Start by making the loader - this needs to be done once only.  
 make TARGETS=apple2.loader
 
-Next, make the game with:
+Next, make the game with:  
 make
 
 The next step is to make a bootable disk image.  For this, you will need some
@@ -89,29 +89,29 @@ as Makefile).  This software will put the loader and game into the disk image.
 
 Since I use Windows to develop, I have a file called build.cmd next to the
 Makefile (and checked in here as well).  The contents of this file is listed
-below (where the line ends with "\" isn't actually a line-end, I just cut the
+below (where the line ends with "\\" isn't actually a line-end, I just cut the
 line there for readability, the next line is actually on the same line as the
-line ending with "\").
+line ending with "\\").
 
-copy apple2\template.dsk Penetrator.dsk
-java -jar apple2\AppleCommander-win64-1.5.0.jar -p  Penetrator.dsk \
-    penetrat.system sys < penetrator.apple2.loader
-java -jar apple2\AppleCommander-win64-1.5.0.jar -as Penetrator.dsk \
-    penetrat        bin < penetrator.apple2
-apple2\Applewin.exe -d1 penetrator.dsk
+copy apple2\\template.dsk Penetrator.dsk  
+java -jar apple2\\AppleCommander-win64-1.5.0.jar -p  Penetrator.dsk \\  
+    penetrat.system sys < penetrator.apple2.loader  
+java -jar apple2\\AppleCommander-win64-1.5.0.jar -as Penetrator.dsk \\  
+    penetrat        bin < penetrator.apple2  
+apple2\\Applewin.exe -d1 penetrator.dsk  
 
 You will need to install Java to use AppleCommander.  The apple2/template.dsk is
 a "blank ProDos floppy" that has the loader and the game placed on it by
 AppleCommander.  I use the AppleWin emulator to run the game (-d1 penetrator.dsk
 mounts the floppy in drive one, and then boots from it automatically).  In
 powershell, when developing the game, I would just use this command to do it
-all: 
-make; .\build.cmd
+all:  
+make; .\\build.cmd
 
-Find AppleCommander here (I used Version 1.5.0):
+Find AppleCommander here (I used Version 1.5.0):  
 https://github.com/AppleCommander/AppleCommander/releases
 
-Find AppleWin here:
+Find AppleWin here:  
 https://github.com/AppleWin/AppleWin/releases
 
 7. CREDITS
@@ -128,6 +128,6 @@ https://github.com/AppleWin/AppleWin/releases
 Feel free to contact me at swessels@email.com if you have thoughts or
 suggestions.
 
-Thank you
-Stefan Wessels
-16 December 2019 - Initial Revision
+Thank you  
+Stefan Wessels  
+16 December 2019 - Initial Revision  
