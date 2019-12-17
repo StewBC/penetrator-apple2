@@ -94,10 +94,10 @@ line there for readability, the next line is actually on the same line as the
 line ending with "\\").
 
 copy apple2\\template.dsk Penetrator.dsk  
-java -jar apple2\\AppleCommander-win64-1.5.0.jar -p  Penetrator.dsk \\  
-    penetrat.system sys < penetrator.apple2.loader  
-java -jar apple2\\AppleCommander-win64-1.5.0.jar -as Penetrator.dsk \\  
-    penetrat        bin < penetrator.apple2  
+java -jar apple2\AppleCommander-win64-1.5.0.jar -p  Penetrator.dsk \\  
+    penetrat.system sys < penetrator-apple2.apple2.loader  
+java -jar apple2\AppleCommander-win64-1.5.0.jar -as Penetrator.dsk \\  
+    penetrat        bin < penetrator-apple2.apple2  
 apple2\\Applewin.exe -d1 penetrator.dsk  
 
 You will need to install Java to use AppleCommander.  The apple2/template.dsk is
