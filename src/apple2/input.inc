@@ -82,7 +82,6 @@ right:
     ora joyMask 
     eor #$ff
     sta joyMask                                 ; update the joy Mask with X digital
-    ldx #$00
     rts                                         ; return with joyMask in accumulator
 
 leave:
