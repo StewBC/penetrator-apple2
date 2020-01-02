@@ -40,40 +40,44 @@ xchk:                                           ; get bit 8 clear in c064 and c0
     bpl goY                                     ; bit 8 not set?
     nop                                         ; wast time
     inx                                         ; count the ticks
-    lda $c065                                   ; load up/down
+    bne :+                                      ; overflow?
+    dex                                         ; keep $ff
+:   lda $c065                                   ; load up/down
     bmi ychk                                    ;  
     bpl xchk                                    ; 
 ychk:
     iny                                         ; inc y counter
-    jmp xchk                                    ; goX
+    bne :+                                      ; overflow?
+    dey                                         ; keep $ff
+:   jmp xchk                                    ; goX
 
 goY:
     lda $c065                                   ; load up/down
     bmi ychk                                    ; bit 8 set?
 
     tya                                         ; y is the direction analog
-    cmp #$66                                    ; >= $66 is down
+    cmp #$60                                    ; >= $60 is down
     bcs down
-    cmp #$33                                    ; < $33 is up, $33-$65 is deadzone
+    cmp #$10                                    ; < $10 is up, rest is deadzone
     bcs doX
-    lda #KEY_UP                                 ; < $33 is KEY_UP digital
+    lda #KEY_UP                                 ; < $10 is KEY_UP digital
     bne :+
 down:
-    lda #KEY_DOWN                               ; >= $66 is KEY_DOWN digital
+    lda #KEY_DOWN                               ; >= $60 is KEY_DOWN digital
 :
     ora joyMask                                 ; update the mask
     sta joyMask                                 ; for the Y direction
 
 doX:
     txa                                         ; turn x into digital
-    cmp #$66                                    ; >= $66 is right
+    cmp #$60                                    ; >= $60 is right
     bcs right
-    cmp #$33                                    ; < $33 is left, rest is deadzone
+    cmp #$10                                    ; < $10 is left, rest is deadzone
     bcs leave
-    lda #KEY_LEFT                               ; < $33 is KEY_LEFT digital
+    lda #KEY_LEFT                               ; < $10 is KEY_LEFT digital
     bne :+
 right:
-    lda #KEY_RIGHT                              ; > $66 is KEY_RIGHT
+    lda #KEY_RIGHT                              ; > $60 is KEY_RIGHT
 :
     ora joyMask 
     eor #$ff
