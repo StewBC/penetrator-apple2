@@ -72,6 +72,8 @@ store:
     dex 
     bpl :-
 
+    sta backLayer                               ; set back layer to 0
+
     ldx #((BitMasksEnd - BitMasks) - 1)
 :
     lda BitMasks, x
