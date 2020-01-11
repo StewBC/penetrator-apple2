@@ -111,8 +111,15 @@ PRESS_ANY_KEY:
         sta     READ_REF
         sta     CLOSE_REF
 
+        ; Turn off 80-column firmware
+        lda     VERSION
+        cmp     #$06        ; //e ?
+        bne     :+
+        lda     #$15
+        jsr     $C300
+
         ; Switch to hires page 2
-        bit     TXTCLR
+:       bit     TXTCLR
         bit     MIXCLR
         bit     HISCR
         bit     HIRES
