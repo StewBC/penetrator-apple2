@@ -61,9 +61,6 @@ moveVert:        .res 1                         ; keeps track of vertical moveme
 ; helper variables
 updateHUD:       .res 1                         ; 0 - don't draw, 1+ - clean and redraw
 flipFlop:        .res 1                         ; counter to advance explosion frames
-
-Skip0x8F:        .res 1                         ; $8f zero page - paddl0? can't be used (can this variable location be asserted?)
-
 backLayer:       .res 1                         ; [0|1] - Layer not shown to user *=(to be drawn to)
 enemyHit:        .res 1                         ; the flags of the enemy destroyed in gameKillEnemy
 enemyHitType:    .res 1                         ; 0 = nuke, 1 = missile, 2 = monster, 3 = radar, $ff - nothing
