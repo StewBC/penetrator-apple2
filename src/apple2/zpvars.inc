@@ -57,6 +57,7 @@ dangerTickCount: .res 1                         ; how often a dot is added to th
 dangerTickIdx:   .res 1                         ; the index into the text that holds the danger line of dots
 moveHorz:        .res 1                         ; keeps track of horizontal movement - only moves every 2nd frame
 moveVert:        .res 1                         ; keeps track of vertical movement - moves 4 rows but over 2 frames
+runAudio:        .res 1                         ; flip-flop for service audio or run a game frame
 
 ; helper variables
 updateHUD:       .res 1                         ; 0 - don't draw, 1+ - clean and redraw
@@ -67,3 +68,8 @@ enemyHitType:    .res 1                         ; 0 = nuke, 1 = missile, 2 = mon
 lastInput:       .res 1                         ; holds the value of the prev joystick frame
 pause:           .res 1                         ; <> 0 when the game is paused
 fireCoolDown:    .res 1
+
+; audio variables
+audioMask:       .res 1                         ; which audio "channels" are active (and with audioFrame)
+audioFrame:      .res 1                         ; prioritized mask for sounds to make (msb to lsb)
+audioExplFrame:  .res 1                         ; explosion frame index, for sound

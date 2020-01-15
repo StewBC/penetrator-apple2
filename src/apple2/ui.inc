@@ -83,7 +83,7 @@ loop:
     jmp loop
 
 done:
-    rts
+    rts 
 
 .endproc 
 
@@ -348,6 +348,7 @@ plot:
 
     jsr drawClearScreen
 
+redraw:
     print textInstructions, #(10), #(8*04)
     print textPress       , #(13), #(8*08)
     print textUnderline   , #(13), #(8*09)
@@ -357,6 +358,22 @@ plot:
     print textLoad        , #(01), #(8*14)
     print textSirens      , #(05), #(8*15)
 
+    lda audioMask 
+    beq none
+
+    bit Bit8432Mask 
+    bne :+
+    print textAudio2      , #(20), #(8*15)
+    jmp present
+
+:
+    print textAudio1      , #(20), #(8*15)
+    jmp present
+
+none:
+    print textAudio3      , #(20), #(8*15)
+
+present:
     jsr drawPresent
 
     lda #GAME_MODE_PLAY                         ; assume the player will play (play is 0)
@@ -400,7 +417,21 @@ load:
     jmp uiMainMenu
 
 sirens:
-    jmp loop                                    ; siren code instead of this
+    lda audioMask 
+    beq audioSetAll
+    bit Bit8432Mask 
+    bne :+
+    lda #0
+    beq :++
+:
+    lda #(AUDIO_EXPLOSION | AUDIO_BOMB_DROP | AUDIO_FIRE | AUDIO_UI_TICK)
+    bne :+
+
+audioSetAll:
+    lda #%01111111
+:
+    sta audioMask
+    jmp redraw                                    ; siren code instead of this
 
 
 options: .byte "12TELS"
@@ -1030,6 +1061,13 @@ loop:
     bit Bit8Mask
     beq loop
     bit KBDSTRB
+
+    pha 
+    lda #AUDIO_UI_TICK
+    sta audioFrame
+    jsr serviceAudio
+    pla 
+
     and #$7F
     cmp #$0D                                    ; enter key then done
     beq enter 

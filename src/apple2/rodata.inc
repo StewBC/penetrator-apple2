@@ -182,6 +182,11 @@ BitMasks:
 BitMasksEnd:
 
 ;-----------------------------------------------------------------------------
+; Audio delay values
+explDelay:
+    .byte $04, $08, $06, $04
+
+;-----------------------------------------------------------------------------
 ; Sprite Information
 ; Images to the right in human form, not Apple II form (i.e. bytes don't
 ; neccesarily match visuals).  Rendering is bottom up so stored upside-down.

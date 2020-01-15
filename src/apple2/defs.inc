@@ -11,6 +11,7 @@
 
 ram_layer0      = $2000                         ; HGR Pages
 ram_layer1      = $4000
+speaker_toggle  = $C030
 
 ;-----------------------------------------------------------------------------
 ; self-modifying address marker
@@ -55,6 +56,15 @@ NUM_SKIP_MONST   = 4                            ; How many rockets to skip befor
 DANGER_FONT      = 4                            ; Number of font characters that make one filled column
 DANGER_LENGTH    = ((textEnd-1)-textDangerBar)  ; how many characters in the danger column (skip trailing 0)
 DANGER_TICKS     = ((((worldDataEnd-worldDataStart) / 3) / DANGER_LENGTH) / DANGER_FONT)
+
+; audio constants
+AUDIO_BOMB_DROP  = %01000000                    ; Releasing a bomb
+AUDIO_FIRE       = %00100000                    ; Firing the gun
+AUDIO_EXPLOSION  = %00010000                    ; An enemy exploding
+AUDIO_MOTOR_FWD  = %00001000                    ; Speeding up
+AUDIO_MOTOR_REW  = %00000100                    ; slowing down
+AUDIO_MOTOR_PLAY = %00000010                    ; flying at a constant speed
+AUDIO_UI_TICK    = %00000001                    ; UI selection
 
 ; The enemyBuffer is filled with these values, which break down as:
 ;

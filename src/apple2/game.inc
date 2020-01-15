@@ -41,6 +41,19 @@ preamble:                                       ; bring terrain on-screen with n
     wait #$40                                   ; give the user a moment to get ready
 
 loop:
+    lda runAudio
+    eor #1
+    sta runAudio
+    bne :+
+    jsr serviceAudio
+    lda audioFrame
+    ora #AUDIO_MOTOR_PLAY
+    sta audioFrame
+    beq loop 
+:
+    lda playerDead
+    bne skip
+    
     jsr inputGame                               ; read joystick and move player, check for pause key
     cmp #$9b                                    ; check for ESC
     bne skip                                    ; if not, check for pause
@@ -85,7 +98,7 @@ delay:
 
 died:
     dec playerDead                              ; the counter holds the explosion state
-    bne skip                                    ; don't get user input
+    bne loop                                    ; don't get user input
     jsr gameNextPlayer                          ; switch players if a 2p game
     jmp outerloop
 
@@ -146,6 +159,7 @@ win:
     sta flipFlop
     sta pause
     sta fireCoolDown
+    sta audioFrame
 
     tax                                         ; clear the buffers for tracking objects
 :
@@ -1121,6 +1135,13 @@ continue:
 :
     and #%00000011                              ; mask column (or strip of the sprite)
     sta zaSprColumn                             ; save it
+
+    lda audioFrame
+    ora #AUDIO_EXPLOSION                        ; Add explosion to audio frame
+    sta audioFrame
+    lda #0                                      ; start the explosion at frame 0
+    sta audioExplFrame
+
 
     lda zaEnemyColLocal                         ; see where the sprite starts
     sec                                         ; by subtracting the strip number (index)

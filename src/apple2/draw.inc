@@ -352,7 +352,12 @@ explode:
     stx explFrame
 
 :
-    lda #3                                      ; set a nonsense width to make the explosio
+    stx audioExplFrame
+    lda audioFrame
+    ora #AUDIO_EXPLOSION
+    sta audioFrame
+
+    lda #3                                      ; set a nonsense width to make the explosion
     sta zaDataWidth                             ; not so recognizable
 
     lda #3                                      ; set the dimensions of the explosion

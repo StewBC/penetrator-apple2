@@ -21,6 +21,7 @@ jmp main                                        ; This ends up at $080d (sys 206
 .include "defs.inc"                             ; constants
 .include "macros.inc"                           ; vpoke, vpeek, print* & wait.
 .include "zpvars.inc"                           ; Zero Page usage (variables)
+.include "audio.inc"                            ; Play notes fro audio events
 .include "input.inc"                            ; Keyboard/Joystick routines
 .include "ui.inc"                               ; The front-end code
 .include "edit.inc"                             ; In-game editor
@@ -34,7 +35,7 @@ jmp main                                        ; This ends up at $080d (sys 206
 .include "fontdata.inc"                         ; The ZA Spectrum font as 2bpp, 2 bytes/char
 .include "logodata.inc"                         ; Lines to spell Penetrator and intro graphic
 .include "rodata.inc"                           ; Read Only (RODATA segment sprites, etc)
-.include "logo.inc"
+.include "logo.inc"                             ; The include to include the HGR image
 
 ;-----------------------------------------------------------------------------
 .segment "CODE"
@@ -67,12 +68,16 @@ store:
 
     ldx #((highScoresEnd-highScores) - 1)       ; set high score table scores to 0
     lda #$0
+    sta backLayer                               ; set back layer to 0
+    sta audioFrame                              ; set all audio channels to off (0)
 :
     sta highScores, x
     dex 
     bpl :-
 
-    sta backLayer                               ; set back layer to 0
+    ldx #(AUDIO_EXPLOSION | AUDIO_BOMB_DROP | AUDIO_FIRE | AUDIO_UI_TICK)
+
+    stx audioMask                               ; set the mask to all channels on ($ff)
 
     ldx #((BitMasksEnd - BitMasks) - 1)
 :

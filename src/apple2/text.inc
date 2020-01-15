@@ -37,7 +37,12 @@ textOneTwo:       .asciiz "\"1\" OR \"2\" FOR NUMBER OF PLAYERS"
 textTrain:        .asciiz "\"T\"  FOR TRAINING CONTROL CENTER"
 textEdit:         .asciiz "\"E\" FOR THE LANDSCAPE EDITOR"
 textLoad:         .asciiz "\"L\"  TO LOAD ANOTHER LANDSCAPE"
-textSirens:       .asciiz "\"S\" TO DISABLE SIRENS"
+textSirens:       .asciiz "\"S\" SET AUDIO: "
+
+; main menu audio options
+textAudio1:       .asciiz "ENGINE, SFX"
+textAudio2:       .asciiz "SFX        "
+textAudio3:       .asciiz "NONE       "
 
 ; training mode menu
 textTrainingMode: .asciiz "TRAINING MODE"

@@ -142,7 +142,10 @@ left:
     dex                                         ; move left one column
     bmi preBomb                                 ; if off-screen to the left, ignore
     stx playerShipX                             ; save the movement
-    bpl preBomb
+    lda audioFrame
+    ora #AUDIO_MOTOR_REW
+    sta audioFrame
+    bne preBomb
 
 right:
     bit Bit1Mask                                ; bit set when right joystick active
@@ -153,6 +156,9 @@ right:
     cpx #(((XSIZE/3)*2) - SHIP_WIDTH - 1)       ; limit to two-thirds toward the right
     bcs preBomb                                 ; if over limit, ignore
     stx playerShipX                             ; save movement
+    lda audioFrame
+    ora #AUDIO_MOTOR_FWD
+    sta audioFrame
 
 preBomb:
     lda zaRawInput
@@ -184,6 +190,9 @@ drop:
     sta bombY, x
     lda #BOMB_FRWRD_FRMS                        ; set it to fly forward
     sta bombDir, x
+    lda audioFrame
+    ora #AUDIO_BOMB_DROP
+    sta audioFrame
 nobomb:
     lda zaRawInput
 
@@ -208,6 +217,9 @@ fire:
     sta bulletsBuffer, x                        ; put height into 3 columns
     lda #3
     sta fireCoolDown
+    lda audioFrame
+    ora #AUDIO_FIRE
+    sta audioFrame
 
 joyDone:
     lda zaRawInput                              ; remember the key-state for next time
@@ -380,10 +392,17 @@ joyDone:
     bne :-
 :
     txa 
-    rts 
+    ; rts 
 
 done:
     and #$7f
+    beq :+
+    pha 
+    lda #AUDIO_UI_TICK
+    sta audioFrame
+    jsr serviceAudio
+    pla 
+:
     rts                                         ; upon return 0 means no interaction, anything else is a user input
 
 .endproc
