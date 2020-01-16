@@ -1154,16 +1154,20 @@ continue:
 
     lda #0                                      ; write 0 to the enemy strip columns
     sta enemyBuffer, x
+    sta enemyHgtBuffer, x
     inx 
     sta enemyBuffer, x 
+    sta enemyHgtBuffer, x 
     dey 
     beq next                                    ; early out on missiles and nukes
     inx 
     sta enemyBuffer, x 
+    sta enemyHgtBuffer, x 
     dey 
     beq next                                    ; early out on monsters
     inx 
     sta enemyBuffer, x
+    sta enemyHgtBuffer, x
 
 next:
     inc zaEnemyColLocal
