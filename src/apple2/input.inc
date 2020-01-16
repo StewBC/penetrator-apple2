@@ -15,53 +15,59 @@
     lda #0                                      ; assume no buttons
     sta joyMask                                 ; init the mask
 
-    lda $c061                                   ; check RDBTN0
+    lda BUTN0                                   ; check RDBTN0
     cmp #$80                                    ; fully active
     bne :+                                      ; no, ignore
+
     lda #KEY_FIRE                               ; RDBTN0 maps to fire
     sta joyMask                                 ; init the mask
 
 :
-    lda $c062                                   ; check BUTN1
+    lda BUTN1                                   ; check BUTN1
     cmp #$80                                    ; fully active
     bne :+                                      ; no, ignore
+
     lda joyMask
     ora #KEY_BOMB                               ; BUTN1 maps to Bomb
     sta joyMask                                 ; update the mask
     
 :
-    lda $c070                                   ; Reset the input
+    lda PTRIG                                   ; Reset the input
 
     ldy #0                                      ; zero the direction counters
     ldx #0
 
 xchk:                                           ; get bit 8 clear in c064 and c065
-    lda $c064                                   ; load left/right
+    lda PADDL0                                  ; load left/right
     bpl goY                                     ; bit 8 not set?
     nop                                         ; wast time
     inx                                         ; count the ticks
     bne :+                                      ; overflow?
     dex                                         ; keep $ff
-:   lda $c065                                   ; load up/down
+:   
+    lda PADDL0 + 1                              ; load up/down
     bmi ychk                                    ;  
     bpl xchk                                    ; 
+
 ychk:
     iny                                         ; inc y counter
     bne :+                                      ; overflow?
     dey                                         ; keep $ff
-:   jmp xchk                                    ; goX
+:   
+    jmp xchk                                    ; goX
 
 goY:
-    lda $c065                                   ; load up/down
+    lda PADDL0 + 1                              ; load up/down
     bmi ychk                                    ; bit 8 set?
 
     tya                                         ; y is the direction analog
     cmp #$60                                    ; >= $60 is down
     bcs down
-    cmp #$10                                    ; < $10 is up, rest is deadzone
+    cmp #$20                                    ; < $20 is up, rest is deadzone
     bcs doX
-    lda #KEY_UP                                 ; < $10 is KEY_UP digital
+    lda #KEY_UP                                 ; < $20 is KEY_UP digital
     bne :+
+
 down:
     lda #KEY_DOWN                               ; >= $60 is KEY_DOWN digital
 :
@@ -72,10 +78,11 @@ doX:
     txa                                         ; turn x into digital
     cmp #$60                                    ; >= $60 is right
     bcs right
-    cmp #$10                                    ; < $10 is left, rest is deadzone
+    cmp #$20                                    ; < $20 is left, rest is deadzone
     bcs leave
-    lda #KEY_LEFT                               ; < $10 is KEY_LEFT digital
+    lda #KEY_LEFT                               ; < $20 is KEY_LEFT digital
     bne :+
+
 right:
     lda #KEY_RIGHT                              ; > $60 is KEY_RIGHT
 :
@@ -388,7 +395,7 @@ joyDone:
     bit Bit7Mask                                ; FIRE should eq 1 player
     beq :+
     lda #KEY_RIGHT
-    bne check                                      ; JuMP
+    bne check                                   ; JuMP
 
 :
     bit Bit8Mask                                ; BOMB should eq 2 player
@@ -408,11 +415,13 @@ check:
 done:
     and #$7f
     beq :+
-    pha 
-    lda #AUDIO_UI_TICK
+
+    pha                                         ; Save the "key"
+    lda #AUDIO_UI_TICK                          ; make a sound
     sta audioFrame
     jsr serviceAudio
-    pla 
+    pla                                         ; restore the "key"
+
 :
     rts                                         ; upon return 0 means no interaction, anything else is a user input
 

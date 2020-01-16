@@ -11,7 +11,11 @@
 
 ram_layer0      = $2000                         ; HGR Pages
 ram_layer1      = $4000
+
 speaker_toggle  = $C030
+
+PADDL0          = $C064
+PTRIG           = $C070
 
 ;-----------------------------------------------------------------------------
 ; self-modifying address marker
