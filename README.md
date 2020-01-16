@@ -12,8 +12,8 @@ experience :)
 
 2. CURRENT STATUS
 
-The game is a pretty good replica of the original.  It is missing sound.  It's
-also missing the demo attract mode, and the fireworks.  
+The game is a pretty good replica of the original.  It is missing the demo 
+attract mode, and the fireworks.  
 
 3. TECHNICAL DETAILS
 
@@ -75,6 +75,7 @@ if they are accurate.
 There are actually 2 programs in this.  The 1st is the game, and it's in
 src/apple2.
 
+* audio.inc      - Routines to make the speaker beep
 * defs.inc       - Constants and definitions used throughout
 * draw.inc       - HGR buffer drawing.  drawSprite, for example
 * edit.inc       - The built-in world editor
