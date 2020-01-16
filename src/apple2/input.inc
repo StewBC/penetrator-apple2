@@ -384,6 +384,18 @@ joyDone:
     sta lastInput
     pla                                         ; and get back the debounced bits
     beq done
+
+    bit Bit7Mask                                ; FIRE should eq 1 player
+    beq :+
+    lda #KEY_RIGHT
+    bne check                                      ; JuMP
+
+:
+    bit Bit8Mask                                ; BOMB should eq 2 player
+    beq check
+    lda #KEY_LEFT
+
+check:
     ldx #1
 :
     lsr 
@@ -392,7 +404,6 @@ joyDone:
     bne :-
 :
     txa 
-    ; rts 
 
 done:
     and #$7f
