@@ -26,7 +26,7 @@ textStefan:       .asciiz "    Stefan Wessels, Dec 2019    "
 textSupport:      .asciiz "     Lots of great Apple II     "
 textOliver:       .asciiz "   Support from Oliver Schmidt  "
 textSource:       .asciiz "        Source on GitHub:       "
-textGitHub:       .asciiz "   github.com/StewBC/penetrator "
+textGitHub:       .asciiz "     StewBC/penetrator-apple2   "
 textGameOver:     .asciiz "********** GAME  OVER **********"
 
 ; main menu

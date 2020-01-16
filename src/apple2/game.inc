@@ -41,18 +41,15 @@ preamble:                                       ; bring terrain on-screen with n
     wait #$40                                   ; give the user a moment to get ready
 
 loop:
-    lda runAudio
+    lda runAudio                                ; alternate between game and audio
     eor #1
     sta runAudio
-    bne :+
-    jsr serviceAudio
-    lda audioFrame
-    ora #AUDIO_MOTOR_PLAY
-    sta audioFrame
-    beq loop 
+    beq :+                                      ; run the game when runAudio eq 0
+    jsr serviceAudio                            ; run the audio
+    jmp loop                                    ; go back and flip to the game
 :
-    lda playerDead
-    bne skip
+    lda playerDead                              ; check if the input should run
+    bne skip                                    ; and skip if not
     
     jsr inputGame                               ; read joystick and move player, check for pause key
     cmp #$9b                                    ; check for ESC
@@ -60,7 +57,7 @@ loop:
     rts                                         ; on ESC, just quit
 
 skip:
-    lda playerDead                              ; even on every second frame if the player is dead the world doesn't move
+    lda playerDead                              ; if the player is dead the world doesn't move
     bne :+
     jsr gameWorldMove                           ; scroll the world
     inc bufferDraw                              ; and move the draw start also
@@ -74,7 +71,7 @@ skip:
 
 next:
     dec bulletIndex                             ; Bullets move every frame (2x for 1 world move)
-    dec bulletIndex                             ; Bullets move every frame (2x for 1 world move)
+    dec bulletIndex
 
 draw:
     jsr terrainShow                             ; show terrain 1st because it collides with nothing
@@ -156,10 +153,10 @@ win:
     sta dangerTickIdx
     sta moveHorz
     sta moveVert
+    sta runAudio
     sta flipFlop
     sta pause
     sta fireCoolDown
-    sta audioFrame
 
     tax                                         ; clear the buffers for tracking objects
 :
@@ -180,6 +177,9 @@ win:
 
     lda #XSIZE-1                                ; place where terrain will start drawing (right hand)
     sta terrainOrigin
+
+    lda #AUDIO_MOTOR_PLAY                       ; Init th eaudio-frame with the engine
+    sta audioFrame
 
     lda #$ff 
     sta lastInput                               ; set no keys down all 1's

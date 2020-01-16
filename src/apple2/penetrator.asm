@@ -70,6 +70,7 @@ store:
     lda #$0
     sta backLayer                               ; set back layer to 0
     sta audioFrame                              ; set all audio channels to off (0)
+    sta numPlayers                              ; Init initially to 0 (not set for training)
 :
     sta highScores, x
     dex 

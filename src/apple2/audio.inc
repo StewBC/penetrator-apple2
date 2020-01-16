@@ -39,15 +39,14 @@ explosion:
     tax 
     ldy #$6
     jsr playNote
-    inc audioExplFrame
+
+    inc audioExplFrame                          ; make sure off-screen ticks to end
     lda audioExplFrame
     cmp #%00000011
     bcc :+
-    stx audioFrame                              ; turn off the explosion
-    rts 
+    lda #AUDIO_MOTOR_PLAY
+    sta audioFrame                              ; turn off the explosion
 :
-    lda #AUDIO_EXPLOSION
-    sta audioFrame
     rts 
 
 bombDrop:
@@ -106,7 +105,9 @@ loop:
     
     lda #AUDIO_EXPLOSION                        ; reset the audio frame (serviced)
     and audioFrame                              ; but keep explosion if it was set
+    ora #AUDIO_MOTOR_PLAY                       ; and always add the MOTOR
     sta audioFrame
+
     rts 
 
 .endproc 

@@ -34,7 +34,7 @@ loopo:
     sta zaState 
 
 loop:
-    lda #$10
+    lda #$08
     sta zaCounterH
 
     lda zaState 
