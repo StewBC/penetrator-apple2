@@ -18,6 +18,7 @@
 jmp main                                        ; This ends up at $080d (sys 2061's target)
 
 ;-----------------------------------------------------------------------------
+.include "apple2.inc"                           ; Apple II locations from cc65
 .include "defs.inc"                             ; constants
 .include "macros.inc"                           ; vpoke, vpeek, print* & wait.
 .include "zpvars.inc"                           ; Zero Page usage (variables)
@@ -39,12 +40,15 @@ jmp main                                        ; This ends up at $080d (sys 206
 
 ;-----------------------------------------------------------------------------
 .segment "CODE"
+
+;-----------------------------------------------------------------------------
 .proc main
 
     jsr mainGameSetup
 :
     jsr inputCheckForInput                      ; wait for user interaction
     beq :-
+    jsr drawClearScreen
     jsr drawPresent
 :
     jsr uiTitleScreen
@@ -56,6 +60,27 @@ jmp main                                        ; This ends up at $080d (sys 206
 ;-----------------------------------------------------------------------------
 .proc mainGameSetup
 
+    lda #$0
+    sta backLayer                               ; set back layer to 0
+    sta audioFrame                              ; set all audio channels to off (0)
+    sta numPlayers                              ; Init initially to 0 (not set for training)
+
+    lda PATHNAME                                ; length of file path
+    tax                                         ; put in index
+:
+    lda PATHNAME, x                             ; get character
+    cmp #'/'                                    ; look backwards for directory seperator
+    beq :+
+    dex 
+    bne :-
+
+:
+    inx                                         ; 1 or 1 past / is where the file name starts
+    stx pathPos                                 ; save that location
+
+    jsr loadHighScores                          ; load high scores from disc
+    bcc cont                                    ; on success, skip the init
+
     ldx #((textHSEnd-textHS) - 1)               ; empty the high score names to spaces
 store:
     lda textHS, x
@@ -66,19 +91,16 @@ store:
     dex 
     bpl store
 
-    ldx #((highScoresEnd-highScores) - 1)       ; set high score table scores to 0
     lda #$0
-    sta backLayer                               ; set back layer to 0
-    sta audioFrame                              ; set all audio channels to off (0)
-    sta numPlayers                              ; Init initially to 0 (not set for training)
+    ldx #((highScoresEnd-highScores) - 1)       ; set high score table scores to 0
 :
     sta highScores, x
     dex 
     bpl :-
 
-    ldx #(AUDIO_EXPLOSION | AUDIO_BOMB_DROP | AUDIO_FIRE | AUDIO_UI_TICK)
-
-    stx audioMask                               ; set the mask to all channels on ($ff)
+cont:
+    lda #(AUDIO_EXPLOSION | AUDIO_BOMB_DROP | AUDIO_FIRE | AUDIO_UI_TICK)
+    sta audioMask                               ; set the mask for default ON channels
 
     ldx #((BitMasksEnd - BitMasks) - 1)
 :

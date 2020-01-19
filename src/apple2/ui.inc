@@ -199,6 +199,9 @@ show:                                           ; a high-score was set, so show 
     width   = tempBlock + 14
     height  = tempBlock + 15
 
+    lda #0
+    sta audioExplFrame                          ; use this as a delay counter for logo sound
+
     lda #((dataLogoLinesEnd - dataLogoLines) / 4)
     sta remain
     
@@ -215,6 +218,8 @@ show:                                           ; a high-score was set, so show 
 loop:
     dec remain                                  ; iterate over all lines
     bpl :+
+    lda #0
+    sta audioExplFrame
     rts 
 : 
     ldx index 
@@ -285,6 +290,18 @@ plot:
 
     lda skip                                    ; if key/button pressed - fast draw logo
     bne :+
+    lda audioMask
+    beq nosnd
+snd:    
+    ldy audioExplFrame
+    ldx #4
+    jsr playNote                                ; play the note
+    dec audioExplFrame                          ; alter the note
+    dec audioExplFrame
+    bmi nosnd                                   ; variable decay so that the duration
+    dec audioExplFrame                          ; is a close match to when the logo ends
+    dec audioExplFrame
+nosnd:
     jsr inputCheckForInput                      ; check for user interaction
     sta skip 
     bne :+
@@ -357,6 +374,7 @@ redraw:
     print textEdit        , #(02), #(8*13)
     print textLoad        , #(01), #(8*14)
     print textSirens      , #(05), #(8*15)
+    print textQuit        , #(12), #(8*16)
 
     lda audioMask 
     beq none
@@ -416,7 +434,10 @@ load:
     jsr uiFileLoadSave                          ; call the code to do file name and load
     jmp uiMainMenu
 
-sirens:
+sirens:                                         ; For Apple II this is the "set sound type"
+    cpx #5
+    bne quit
+
     lda audioMask 
     beq audioSetAll
     bit Bit8432Mask 
@@ -431,10 +452,23 @@ audioSetAll:
     lda #%01111111
 :
     sta audioMask
-    jmp redraw                                    ; siren code instead of this
+    jmp redraw
 
+quit:
+    inc PWREDUP                                 ; Make sure this isn't a power vector
 
-options: .byte "12TELS"
+    jsr MLI                                     ; call the prodos mli ($bf00) - never returns here
+    .byte QUIT_CALL                             ; call type = quit
+    .addr quitParam                             ; pointer to parameter table
+
+quitParam: 
+    .byte 4                                     ; number of parameters is 4
+    .byte 0                                     ; quit type
+    .word 0000                                  ; reserved
+    .byte 0                                     ; reserved
+    .word 0000                                  ; reserved
+
+options: .byte "12TELSQ"
 optionsEnd:
 
 .endproc
@@ -778,7 +812,8 @@ copyScore:
     dey 
     bpl :-
 
-    jmp uiGetHighScoreName                      ; now get the new name
+    jsr uiGetHighScoreName                      ; now get the new name
+    jmp saveHighScores
 
 .endproc
 
@@ -981,13 +1016,7 @@ enter:
     lda #0                                      ; and null terminate the string
     sta (zaEntryL), y
 
-setPathName:
-    sty PATHNAME 
-:
-    lda (zaEntryL), y
-    sta PATHNAME+1,y 
-    dey 
-    bpl :-
+    jsr setWorldFileName
 
     lda #1                                      ; enter has been pressed - it's all over
     sta allOver                                 ; time to attempt a disc action, but just redraw once more
@@ -996,13 +1025,13 @@ setPathName:
 disc:
     lda forLoad                                 ; load or save
     beq save
-    
-    jsr fileLoad                                ; load the file by the name
+
+    jsr loadWorld                               ; load the file by the name
     bcs fail                                    ; if carry set then there's an error
     jmp success                                 ; no error - all good
 
 save:
-    jsr fileSave                                ; save the file
+    jsr saveWorld                               ; save the file
     bcs fail                                    ; if carry set then there's an error
 
 success:

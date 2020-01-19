@@ -6,70 +6,179 @@
 ; This is free and unencumbered software released into the public domain.
 
 ;-----------------------------------------------------------------------------
-PATHNAME    = $0280
-MLI         = $BF00
-
-QUIT_CALL   = $65
-OPEN_CALL   = $C8
-READ_CALL   = $CA
-WRITE_CALL  = $CB
-CLOSE_CALL  = $CC
-CREATE_CALL = $C0
-;-----------------------------------------------------------------------------
 .segment "DATA"
+
 createParam:
-    .byte $07                                   ;PARAM_COUNT
-    .addr PATHNAME                              ;PATHNAME
-    .byte $C3                                   ;ACCESS
-    .byte $06                                   ;FILE_TYPE (6 is binay)
-    .word $0000                                 ;AUX_TYPE
-    .byte $01                                   ;STORAGE_TYPE
-    .word $0000                                 ;CREATE_DATE
-    .word $0000                                 ;CREATE_TIME
+    .byte $07                                   ; param_count
+createName:
+    .addr PATHNAME                              ; pathname
+    .byte $C3                                   ; access
+    .byte $06                                   ; file_type (6 is binay)
+    .word $0000                                 ; aux_type
+    .byte $01                                   ; storage_type
+    .word $0000                                 ; create_date
+    .word $0000                                 ; create_time
 
 openParam:
-    .byte $03                                   ;PARAM_COUNT
-    .addr PATHNAME                              ;PATHNAME
-    .addr $2000-$400                            ;IO_BUFFER
+    .byte $03                                   ; param_count
+openName:
+    .addr PATHNAME                              ; pathname
+    .addr $2000-$400                            ; io_buffer
 openRef:
-    .byte $00                                   ;REF_NUM
+    .byte $00                                   ; ref_num
 
 readParam:
-    .byte $04                                   ;PARAM_COUNT
+    .byte $04                                   ; param_count
 readRef:
-    .byte $00                                   ;REF_NUM
-    .addr worldDataStart                        ;DATA_BUFFER
-    .word $FFFF                                 ;REQUEST_COUNT
-    .word $0000                                 ;TRANS_COUNT
+    .byte $00                                   ; ref_num
+readAddress:
+    .addr worldDataStart                        ; data_buffer
+readLength:
+    .word $FFFF                                 ; request_count
+    .word $0000                                 ; trans_count
 
 writeParam:
-    .byte $04                                   ;PARAM_COUNT
+    .byte $04                                   ; param_count
 writeRef:
-    .byte $00                                   ;REF_NUM
-    .addr worldDataStart                        ;DATA_BUFFER
-    .word worldDataEnd-worldDataStart           ;REQUEST_COUNT
-    .word $0000                                 ;TRANS_COUNT
+    .byte $00                                   ; ref_num
+writeAddress:
+    .addr worldDataStart                        ; data_buffer
+writeLength:
+    .word worldDataEnd-worldDataStart           ; request_count
+    .word $0000                                 ; trans_count
 
 closeParam:
-    .byte   $01                                 ;PARAM_COUNT
+    .byte   $01                                 ; param_count
 closeRef:
-    .byte   $00                                 ;REF_NUM
+    .byte   $00                                 ; ref_num
     
-
 ;-----------------------------------------------------------------------------
 .segment "CODE"
 
 ;-----------------------------------------------------------------------------
-.proc fileSave
+.proc saveWorld
 
-    jsr MLI                                     ; create the file
-    .byte CREATE_CALL
-    .word createParam
-    bcc :+
-    jmp error
+    lda #<worldDataStart                        ; set the location
+    sta writeAddress
+    lda #>worldDataStart
+    sta writeAddress + 1
+
+    lda #<(worldDataEnd-worldDataStart)         ; set the size
+    sta writeLength
+    lda #>(worldDataEnd-worldDataStart)
+    sta writeLength + 1
+
+    jmp saveFile                                ; save
+
+.endproc
+
+;-----------------------------------------------------------------------------
+.proc loadWorld
+
+    lda #<worldDataStart                        ; set the location
+    sta readAddress
+    lda #>worldDataStart
+    sta readAddress + 1
+
+    lda #<(worldDataEnd-worldDataStart)         ; set the length (size)
+    sta readLength
+    lda #>(worldDataEnd-worldDataStart)
+    sta readLength + 1
+
+    jmp loadFile                                ; load
+
+.endproc
+
+;-----------------------------------------------------------------------------
+.proc saveHighScores
+
+    jsr setHighScoreFileNames                   ; set the name
+
+    lda #<scoresTable                           ; set the location
+    sta writeAddress
+    lda #>scoresTable
+    sta writeAddress + 1
+
+    lda #<(scoresTableEnd-scoresTable)          ; set the size
+    sta writeLength
+    lda #>(scoresTableEnd-scoresTable)
+    sta writeLength + 1
+
+    jmp saveFile                                ; save
+
+.endproc
+
+;-----------------------------------------------------------------------------
+.proc loadHighScores
+
+    jsr setHighScoreFileNames                   ; set the name
+
+    lda #<scoresTable                           ; set the location
+    sta readAddress
+    lda #>scoresTable
+    sta readAddress + 1
+
+    lda #<(scoresTableEnd-scoresTable)          ; set the size
+    sta readLength
+    lda #>(scoresTableEnd-scoresTable)
+    sta readLength + 1
+
+    jmp loadFile                                ; load
+
+.endproc
+
+;-----------------------------------------------------------------------------
+.proc setHighScoreFileNames
+
+    ldx pathPos                                 ; append to the end of the path
+    ldy #0                                      ; from the 1st char pf the name
+:
+    lda hihgScoreFileName, y                    ; copy name to path
+    sta PATHNAME, x
+    beq :+
+    iny 
+    inx 
+    bne :-
 
 :
-    jsr MLI
+    stx PATHNAME
+    dec PATHNAME                                ; don't count the trailing null
+
+    rts 
+
+.endproc 
+
+;-----------------------------------------------------------------------------
+.proc setWorldFileName
+
+    zaEntryL = zWorldPtr                        ; internal - ptr to a string being entered (abusing world ptr)
+
+    tya                                         ; add the file length to the path length
+    clc 
+    adc pathPos 
+    tax 
+    stx PATHNAME 
+    dec PATHNAME                                ; don't count the trailing null
+
+:
+    lda (zaEntryL), y                           ; copy the file name to the end of the path
+    sta PATHNAME, x
+    dex 
+    dey 
+    bpl :-
+
+    rts 
+
+.endproc 
+
+;-----------------------------------------------------------------------------
+.proc saveFile
+
+    jsr MLI                                     ; create the file, ignoring errors
+    .byte CREATE_CALL
+    .word createParam
+
+    jsr MLI                                     ; open the (now hopefully existing) file
     .byte OPEN_CALL
     .word openParam
     bcc :+
@@ -96,7 +205,7 @@ error:
 .endproc
 
 ;-----------------------------------------------------------------------------
-.proc fileLoad
+.proc loadFile
 
     jsr MLI
     .byte OPEN_CALL

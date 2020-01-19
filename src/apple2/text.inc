@@ -38,6 +38,7 @@ textTrain:        .asciiz "\"T\"  FOR TRAINING CONTROL CENTER"
 textEdit:         .asciiz "\"E\" FOR THE LANDSCAPE EDITOR"
 textLoad:         .asciiz "\"L\"  TO LOAD ANOTHER LANDSCAPE"
 textSirens:       .asciiz "\"S\" SET AUDIO: "
+textQuit:         .asciiz "\"Q\" QUIT"
 
 ; main menu audio options
 textAudio1:       .asciiz "ENGINE, SFX"
@@ -102,28 +103,7 @@ textFileSuccess:  .asciiz "SUCCESS."
 textFileThe:      .asciiz "The"
 textFileFailed:   .asciiz "Failed.  Error Code"
 
-;-----------------------------------------------------------------------------
-.segment "DATA"
-
-textHS:
-textHighScore1:   .asciiz "123456"
-textHighScore2:   .asciiz "123456"
-textHighScore3:   .asciiz "123456"
-textHighScore4:   .asciiz "123456"
-textHighScore5:   .asciiz "123456"
-textHSEnd:
-
-textStage:        .asciiz "1"
-textPlayerNum:    .asciiz "1"
-textNumber:       .asciiz "1234567"             ; score display 10x score - extra digit needed
-textDangerBar:    .asciiz "123"
-textEnd:
-
-textFileName:     .asciiz "PENEWORLD01"         ; default file name
-textFilePad:      .asciiz ""                    ; This makes the null terminator on textFileName viable and a 12 char filename
-textFileNameEnd:
-szHex:            .asciiz "  "
-
+hihgScoreFileName:.asciiz "PENSCORES"
 
 ;-----------------------------------------------------------------------------
 .segment "CODE"

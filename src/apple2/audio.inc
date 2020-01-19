@@ -8,6 +8,7 @@
 ;-----------------------------------------------------------------------------
 .segment "CODE"
 
+;-----------------------------------------------------------------------------
 .proc serviceAudio
     
     lda audioMask                               ; get the active channels
@@ -50,7 +51,7 @@ explosion:
     rts 
 
 bombDrop:
-    ldy #$50
+    ldy #$30
     ldx #$10
     jmp playNote
 
@@ -77,8 +78,8 @@ engine:
     jmp playNote
 
 ui:
-    ldy #$80
-    ldx #$10
+    ldy #$40
+    ldx #$08
     jmp playNote
 
 .endproc
@@ -91,7 +92,7 @@ ui:
     sty delay
 
 loop:
-    lda speaker_toggle
+    lda SPEAKER
     ldy delay
 :
     nop 

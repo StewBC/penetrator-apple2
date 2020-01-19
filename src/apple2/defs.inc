@@ -7,19 +7,28 @@
 
 ;-----------------------------------------------------------------------------
 ; System locations
-.include "apple2.inc"
+PATHNAME         = $0280
 
-ram_layer0      = $2000                         ; HGR Pages
-ram_layer1      = $4000
+ram_layer0       = $2000                        ; HGR Pages
+ram_layer1       = $4000
 
-speaker_toggle  = $C030
+MLI              = $BF00                        ; ProDOS API
+SPEAKER          = $C030                        ; Access to toggle the speaker
+PADDL0           = $C064                        ; Read to get POT
+PTRIG            = $C070                        ; Reset PADDLE values
 
-PADDL0          = $C064
-PTRIG           = $C070
+;-----------------------------------------------------------------------------
+; MLI call type bytes
+QUIT_CALL        = $65
+OPEN_CALL        = $C8
+READ_CALL        = $CA
+WRITE_CALL       = $CB
+CLOSE_CALL       = $CC
+CREATE_CALL      = $C0
 
 ;-----------------------------------------------------------------------------
 ; self-modifying address marker
-PLACEHOLDER     = $FFFF
+PLACEHOLDER      = $FFFF
 
 ;-----------------------------------------------------------------------------
 ; modes
@@ -44,7 +53,7 @@ KEY_BOMB         = %10000000
 ;-----------------------------------------------------------------------------
 ; game constants
 XINSET           = 4                            ; By how many BYTE cols the display is offset into X
-XSIZE            = (80 - (4 * XINSET))          ; columns on screen (1 BYTE col = 2 game cols)
+XSIZE            = (80 - (4 * XINSET))          ; columns on screen (1 BYTE col                             = 2 game cols)
 YSIZE            = 192                          ; lines on screen
 
 WORLD_START      = $08                          ; top line where world is drawn

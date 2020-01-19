@@ -49,6 +49,11 @@ loop:
     bcc notnum
     sbc #'1'                                    ; stages are 0 based
     sta stage 
+
+    lda #AUDIO_UI_TICK                          ; make a sound
+    sta audioFrame
+    jsr serviceAudio
+
     lda #0                                      ; reset where the buffers will start
     sta bufferInsert
     jsr drawClearScreen
@@ -58,6 +63,11 @@ loop:
 notnum:
     cmp #$1b                                    ; ESC key
     bne notQuit
+
+    lda #AUDIO_UI_TICK                          ; make a sound
+    sta audioFrame
+    jsr serviceAudio
+
     lda #1
     sta pause                                   ; abuse pause to signal quit
     rts 
@@ -69,6 +79,10 @@ notQuit:
     bne notHelp 
 
 help: 
+    lda #AUDIO_UI_TICK                          ; make a sound
+    sta audioFrame
+    jsr serviceAudio
+
     jmp uiShowEditHelp
 
 notHelp:
@@ -78,6 +92,10 @@ notHelp:
     bne notSave 
 
 save:
+    lda #AUDIO_UI_TICK                          ; make a sound
+    sta audioFrame
+    jsr serviceAudio
+
     lda #0                                      ; a 0 is save
     jsr uiFileLoadSave
     jmp editLoop 
@@ -89,6 +107,10 @@ notSave:
     bne done 
 
 load:
+    lda #AUDIO_UI_TICK                          ; make a sound
+    sta audioFrame
+    jsr serviceAudio
+
     lda #1                                      ; a 1 is load
     jsr uiFileLoadSave
     jmp editLoop 
@@ -235,8 +257,8 @@ missile:
     sta zCollision
     sta stopScrolling
     sta bufferInsert
+    sta dangerTickIdx
     sta pause
-    sta terrainOrigin
 
     tax                                         ; start at 0 for the buffers
 :
@@ -257,6 +279,10 @@ missile:
 
     lda #$ff
     sta lastInput                               ; set no keys down - all 1's
+    sta nextStage
+
+    lda #DANGER_TICKS
+    sta dangerTickCount
 
     lda #(XSIZE/2)                              ; middle of the screen in X
     sta playerShipX                             ; is where the cursor is

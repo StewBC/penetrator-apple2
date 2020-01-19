@@ -41,16 +41,6 @@ preamble:                                       ; bring terrain on-screen with n
     wait #$40                                   ; give the user a moment to get ready
 
 loop:
-    lda runAudio                                ; alternate between game and audio
-    eor #1
-    sta runAudio
-    beq :+                                      ; run the game when runAudio eq 0
-    jsr serviceAudio                            ; run the audio
-    jmp loop                                    ; go back and flip to the game
-:
-    lda playerDead                              ; check if the input should run
-    bne skip                                    ; and skip if not
-    
     jsr inputGame                               ; read joystick and move player, check for pause key
     cmp #$9b                                    ; check for ESC
     bne skip                                    ; if not, check for pause
@@ -90,12 +80,13 @@ delay:
 
     lda victory                                 ; when set, either a nuke or back home
     bne win
+    jsr serviceAudio                            ; run the audio
     lda playerDead
     beq loop                                    ; playerDead = 0 means alive so keep going
 
 died:
     dec playerDead                              ; the counter holds the explosion state
-    bne loop                                    ; don't get user input
+    bne skip                                    ; don't get user input
     jsr gameNextPlayer                          ; switch players if a 2p game
     jmp outerloop
 
@@ -153,7 +144,6 @@ win:
     sta dangerTickIdx
     sta moveHorz
     sta moveVert
-    sta runAudio
     sta flipFlop
     sta pause
     sta fireCoolDown

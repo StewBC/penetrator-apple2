@@ -20,6 +20,9 @@ rsEnd:
 
 playerStats:        .res ((rsEnd-rsStart) * 2)  ; 2 copies of stats, for p1 and p2 is 2p game
 
+;-----------------------------------------------------------------------------
+; High scores table saved to disc
+scoresTable:
 highScores:
 highScore1:         .res 3
 highScore2:         .res 3
@@ -28,6 +31,29 @@ highScore4:         .res 3
 highScore5:         .res 3
 highScoresEnd:
 
+textHS:
+textHighScore1:   .asciiz "123456"
+textHighScore2:   .asciiz "123456"
+textHighScore3:   .asciiz "123456"
+textHighScore4:   .asciiz "123456"
+textHighScore5:   .asciiz "123456"
+textHSEnd:
+scoresTableEnd:
+
+;-----------------------------------------------------------------------------
+; user facing text area
+textStage:        .asciiz "1"
+textPlayerNum:    .asciiz "1"
+textNumber:       .asciiz "1234567"             ; score display 10x score - extra digit needed
+textDangerBar:    .asciiz "123"
+textEnd:
+
+textFileName:     .asciiz "PENEWORLD01"         ; default file name
+textFilePad:      .asciiz ""                    ; This makes the null terminator on textFileName viable and a 12 char filename
+textFileNameEnd:
+szHex:            .asciiz "  "
+
+;-----------------------------------------------------------------------------
 ; per "run" buffers
 bombX:              .res NUM_BOMBS              ; 2 bombs allowed, their x values
 bombY:              .res NUM_BOMBS              ; Y values for 2 bombs (0=available)

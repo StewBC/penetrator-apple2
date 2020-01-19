@@ -288,8 +288,11 @@ joyDone:
     sta rawEor                                  ; and save this state as the key state
 
  Button_B:
- 	bit Bit7Mask                               ; Button_B
+ 	bit Bit7Mask                                ; Button_B
     beq Button_A
+    lda #AUDIO_UI_TICK                          ; make a sound
+    sta audioFrame
+    jsr serviceAudio
     lda brushType
     bne radar
     ora #KEY_RIGHT                              ; when pressed, move right as well
@@ -305,6 +308,9 @@ radar:
 Button_A:
 	bit Bit8Mask                                ; Button_A
     beq up
+    lda #AUDIO_UI_TICK                          ; make a sound
+    sta audioFrame
+    jsr serviceAudio
     lda brushType
     bne missile
     ora #KEY_RIGHT
@@ -356,6 +362,9 @@ Button_Start:
     and lastInput                               ; and debounce
     bit Bit5Mask                                ; test if Start button down
     beq joyDone
+    lda #AUDIO_UI_TICK                          ; make a sound
+    sta audioFrame
+    jsr serviceAudio
     lda brushType                               ; if down, toggle the brush type between terrain and enemies
     eor #1
     sta brushType 
