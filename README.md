@@ -123,7 +123,7 @@ The apple2/template.dsk is a "blank ProDos floppy" that has the loader and the
 game placed on it by AppleCommander.
 
 To make the disc image, set an environment variable to point at apple commander
-(see notes) and then use the command:
+(see notes) and then use the command:  
 make dsk
 
 This will make a disc named Penetrator.dsk which can be loaded up in an
@@ -134,20 +134,20 @@ you can edit the Makefile and fill in the commands commands neccesary to launch
 an emulator as well.  Look for apple2_EMUCMD and set that as neccesary.  The
 simplest is to call test.sh or test.bat and fill in a complete command in the
 batch file or shell script.  However you choose to do this, once done, you can
-do everything with the command:
+do everything with the command:  
 make dsk test
 
 NOTES:
 1) Find AppleCommander here (I used Version 1.5.0):
-https://github.com/AppleCommander/AppleCommander/releases 
+https://github.com/AppleCommander/AppleCommander/releases  
 2) Set the environment variable (or change the Makefile-dsk.md) to point at the
-apple commander jar file.  Here's how it's done for different shell's:
- Powershell:
-   $env:AC = "path to apple commander.jar"
- cmd.exe 
-   set AC="path to apple commander.jar"
- bash (Unix or MacOS terminal):
-   export AC="path to apple commander.jar"
+apple commander jar file.  Here's how it's done for different shell's:  
+ Powershell:  
+   $env:AC = "path to apple commander.jar"  
+ cmd.exe   
+   set AC="path to apple commander.jar"  
+ bash (Unix or MacOS terminal):  
+   export AC="path to apple commander.jar"  
 
 7. CREDITS
 
