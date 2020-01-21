@@ -115,37 +115,39 @@ make TARGETS=apple2.loader
 Next, make the game with:  
 make
 
-The next step is to make a bootable disk image.  For this, you will need some
-other piece of 3rd party software.  It's called AppleCommander.  Once
-downloaded, put it in the apple2 folder in the root (apple2 folder at same level
-as Makefile).  This software will put the loader and game into the disk image.
+The next step is to make a bootable disk image.  For this, you will need 3rd
+party software.  I use AppleCommander.  This software will put the loader and
+game into the disk image. You will need to install Java to use AppleCommander.  
 
-Since I use Windows to develop, I have a file called build.cmd next to the
-Makefile (and checked in here as well).  The contents of this file is listed
-below (where the line ends with "\\" isn't actually a line-end, I just cut the
-line there for readability, the next line is actually on the same line as the
-line ending with "\\").
+The apple2/template.dsk is a "blank ProDos floppy" that has the loader and the
+game placed on it by AppleCommander.
 
-copy apple2\\template.dsk Penetrator.dsk  
-java -jar apple2\AppleCommander-win64-1.5.0.jar -p  Penetrator.dsk \\  
-    penetrat.system sys < penetrator-apple2.apple2.loader  
-java -jar apple2\AppleCommander-win64-1.5.0.jar -as Penetrator.dsk \\  
-    penetrat        bin < penetrator-apple2.apple2  
-apple2\\Applewin.exe -d1 penetrator.dsk  
+To make the disc image, set an environment variable to point at apple commander
+(see notes) and then use the command:
+make dsk
 
-You will need to install Java to use AppleCommander.  The apple2/template.dsk is
-a "blank ProDos floppy" that has the loader and the game placed on it by
-AppleCommander.  I use the AppleWin emulator to run the game (-d1 penetrator.dsk
-mounts the floppy in drive one, and then boots from it automatically).  In
-powershell, when developing the game, I would just use this command to do it
-all:  
-make; .\\build.cmd
+This will make a disc named Penetrator.dsk which can be loaded up in an
+emulator.
 
-Find AppleCommander here (I used Version 1.5.0):  
-https://github.com/AppleCommander/AppleCommander/releases
+If you want to edit the code and get into some iterative development/testing,
+you can edit the Makefile and fill in the commands commands neccesary to launch
+an emulator as well.  Look for apple2_EMUCMD and set that as neccesary.  The
+simplest is to call test.sh or test.bat and fill in a complete command in the
+batch file or shell script.  However you choose to do this, once done, you can
+do everything with the command:
+make dsk test
 
-Find AppleWin here:  
-https://github.com/AppleWin/AppleWin/releases
+NOTES:
+1) Find AppleCommander here (I used Version 1.5.0):
+https://github.com/AppleCommander/AppleCommander/releases 
+2) Set the environment variable (or change the Makefile-dsk.md) to point at the
+apple commander jar file.  Here's how it's done for different shell's:
+ Powershell:
+   $env:AC = "path to apple commander.jar"
+ cmd.exe 
+   set AC="path to apple commander.jar"
+ bash (Unix or MacOS terminal):
+   export AC="path to apple commander.jar"
 
 7. CREDITS
 
