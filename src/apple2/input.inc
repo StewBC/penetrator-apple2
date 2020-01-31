@@ -4,6 +4,7 @@
 ;
 ; Stefan Wessels, 2019
 ; This is free and unencumbered software released into the public domain.
+
 ;-----------------------------------------------------------------------------
 .segment "CODE"
 
@@ -12,89 +13,64 @@
 
     joyMask = tempBlock + 21
 
-    lda #0                                      ; assume no buttons
-    sta joyMask                                 ; init the mask
+    ldx #$0                                     ; start the x counter at 0
+    ldy #$0                                     ; start the y counter at 0
+    lda PTRIG                                   ; trigger the fact that the joystick will be read
 
-    lda BUTN0                                   ; check RDBTN0
-    cmp #$80                                    ; fully active
-    bne :+                                      ; no, ignore
+readBoth:
+    lda PADDL0                                  ; get the value for X axis
+    bpl :+                                      ; if MSB is zero, done with X
+upX:
+    inx                                         ; increment the counter
+    bne :+                                      ; while x <> 0 go check y
+    dex                                         ; if x reaches 0 it's overflow, set to 255
+:
+    lda PADDL0 + 1                              ; read the value for the Y axis
+    bpl readX                                   ; if MSB is zero Y is done
+    iny                                         ; increment the Y counter
+    bne readBoth                                ; branch to the start to check both axis
+    dey                                         ; if Y reaches 0 it's overflow, set to 255 and drop through to check x only
 
-    lda #KEY_FIRE                               ; RDBTN0 maps to fire
-    sta joyMask                                 ; init the mask
+readX:
+    lda PADDL0                                  ; get the value for X axis
+    bmi upX                                     ; Y is done but X is not so go increment x
+
+    lda #$ff                                    ; Done analog.  Start the digital mask with all On
+
+    cpx #$20                                    ; compare to the low end dead zone
+    bcs :+                                      ; if greater than, then not left
+    eor #KEY_LEFT                               ; the joystick is left (bit is off)
+    bne chkY                                    ; JuMP as acc is now non-zero
+:
+    cpx #$60                                    ; check the upper bound of the dead-zone
+    bcc chkY                                    ; if less than, then not right
+    eor #KEY_RIGHT                              ; gt high end of dead zone so joystick is right
+
+chkY:
+    cpy #$20                                    ; do the same for the Y axis as for the X axis
+    bcs :+
+    eor #KEY_UP 
+    bne buttons
+:
+    cpy #$60 
+    bcc buttons 
+    eor #KEY_DOWN
+
+buttons:
+    ldx BUTN0                                   ; read the button 0 state
+    cpx #$80                                    ; if ge 128 the button is fully depressed
+    bcc :+ 
+    eor #KEY_FIRE                               ; mark the button as down
 
 :
-    lda BUTN1                                   ; check BUTN1
-    cmp #$80                                    ; fully active
-    bne :+                                      ; no, ignore
+    ldx BUTN1                                   ; do the same for button 1 as for button 0
+    cpx #$80 
+    bcc :+
+    eor #KEY_BOMB
 
-    lda joyMask
-    ora #KEY_BOMB                               ; BUTN1 maps to Bomb
-    sta joyMask                                 ; update the mask
-    
 :
-    lda PTRIG                                   ; Reset the input
+    sta joyMask                                 ; save the mask
 
-    ldy #0                                      ; zero the direction counters
-    ldx #0
-
-xchk:                                           ; get bit 8 clear in c064 and c065
-    lda PADDL0                                  ; load left/right
-    bpl goY                                     ; bit 8 not set?
-    nop                                         ; wast time
-    inx                                         ; count the ticks
-    bne :+                                      ; overflow?
-    dex                                         ; keep $ff
-:   
-    lda PADDL0 + 1                              ; load up/down
-    bmi ychk                                    ;  
-    bpl xchk                                    ; 
-
-ychk:
-    iny                                         ; inc y counter
-    bne :+                                      ; overflow?
-    dey                                         ; keep $ff
-:   
-    jmp xchk                                    ; goX
-
-goY:
-    lda PADDL0 + 1                              ; load up/down
-    bmi ychk                                    ; bit 8 set?
-
-    tya                                         ; y is the direction analog
-    cmp #$60                                    ; >= $60 is down
-    bcs down
-    cmp #$20                                    ; < $20 is up, rest is deadzone
-    bcs doX
-    lda #KEY_UP                                 ; < $20 is KEY_UP digital
-    bne :+
-
-down:
-    lda #KEY_DOWN                               ; >= $60 is KEY_DOWN digital
-:
-    ora joyMask                                 ; update the mask
-    sta joyMask                                 ; for the Y direction
-
-doX:
-    txa                                         ; turn x into digital
-    cmp #$60                                    ; >= $60 is right
-    bcs right
-    cmp #$20                                    ; < $20 is left, rest is deadzone
-    bcs leave
-    lda #KEY_LEFT                               ; < $20 is KEY_LEFT digital
-    bne :+
-
-right:
-    lda #KEY_RIGHT                              ; > $60 is KEY_RIGHT
-:
-    ora joyMask 
-    eor #$ff
-    sta joyMask                                 ; update the joy Mask with X digital
-    rts                                         ; return with joyMask in accumulator
-
-leave:
-    lda joyMask                                 ; return with joyMask in accumulator
-    eor #$ff
-    sta joyMask                                 ; update the joy Mask with X digital
     rts 
 
 .endproc
