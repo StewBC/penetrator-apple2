@@ -4,3 +4,7 @@
 !.vscode/launch.json
 !.vscode/extensions.json
 *.code-workspace
+/obj/
+/Makefile.options
+/Penetrator.dsk
+/penetrator-apple2.*
