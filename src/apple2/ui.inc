@@ -1108,12 +1108,17 @@ loop:
     bcc loop                                    ; ignore below '0'
     cmp #('9'+1)
     bcc accept                                  ; 0-9 okay
-    cmp #('A')                                  ; < 'A' ignore
+    cmp #'A'                                    ; < 'A' ignore
     bcc loop
-    cmp #('Z'+1)                                ; > 'Z' ignore
-    bcs loop 
+    cmp #('Z'+1)
+    bcc accept 
+    cmp #'a'
+    bcc loop 
+    cmp #('z'+1)
+    bcs loop                                    ; ignore past 'Z'
 
 accept:
+    ; lda theChar
     ldy entryLen                                ; how many characters already entered
     cpy textLen                                 ; vs how many can be entered
     bcs loop                                    ; already full, don't accept
