@@ -15,6 +15,9 @@ experience :)
 The game is a pretty good replica of the original.  It is missing the demo 
 attract mode, and the fireworks.  
 
+Here's a video of Oliver Schmidt's son, Pascal, playing the game on real
+hardware: https://www.youtube.com/watch?v=rXC2JKuN594
+
 3. TECHNICAL DETAILS
 
 The game is written in 6502 assembly using the ca65 assembler.
