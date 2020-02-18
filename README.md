@@ -18,8 +18,8 @@ attract mode, and the fireworks.
 Here's a video of Oliver Schmidt's son, Pascal, playing the game on real
 hardware: https://www.youtube.com/watch?v=rXC2JKuN594
 
-There's also a pre-built Apple II disk of the project, Penetrator.dsk in the
-root folder.  This can be played directly in emulators.
+There's also a pre-built Apple II disk of the project, Penetrator.dsk under the
+releases tab.  This can be played directly in emulators.
 
 3. TECHNICAL DETAILS
 
