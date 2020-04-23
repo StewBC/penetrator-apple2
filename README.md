@@ -15,8 +15,8 @@ experience :)
 The game is a pretty good replica of the original.  It is missing the demo 
 attract mode, and the fireworks.  
 
-Here's a video of Oliver Schmidt's son, Pascal, playing the game on real
-hardware: https://www.youtube.com/watch?v=rXC2JKuN594
+Video https://youtu.be/fVms0nNVDtY and here's Oliver Schmidt's son, Pascal,
+playing the game on real hardware: https://www.youtube.com/watch?v=rXC2JKuN594
 
 There's also a pre-built Apple II disk of the project, Penetrator.dsk under the
 releases tab.  This can be played directly in emulators.
